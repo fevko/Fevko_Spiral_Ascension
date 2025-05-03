@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FEVKO Spiral Clicker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white font-sans relative overflow-hidden">
+
+  <!-- SOURCE PAGE -->
+  <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
+    <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
+    <button id="clicker" class="w-48 h-48 rounded-full border-4 border-purple-500 bg-purple-700 bg-opacity-30 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
+      <img src="spiral-button.png" alt="Spiral Button" class="w-32 h-32" />
+    </button>
+    <div id="click-count" class="mt-4 text-lg">Clicks: 0</div>
+    <div id="fevco-count" class="text-sm text-purple-300 mt-1">FEVCOIN: 0.00</div>
+    <div id="cooldown-status" class="mt-2 text-red-400"></div>
+  </div>
+
+  <!-- FIXED NAV BUTTONS -->
+  <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+    <img src="shop.png" class="w-12 h-12 cursor-pointer" onclick="navigate('shop')" />
+    <img src="rebirth.png" class="w-12 h-12 cursor-pointer" onclick="navigate('rebirth')" />
+    <img src="achievements.png" class="w-12 h-12 cursor-pointer" onclick="navigate('achievements')" />
+    <img src="cult-rank.png" class="w-12 h-12 cursor-pointer" onclick="navigate('rank')" />
+    <img src="lore.png" class="w-12 h-12 cursor-pointer" onclick="navigate('lore')" />
+    <img src="daily.png" class="w-12 h-12 cursor-pointer" onclick="navigate('daily')" />
+    <img src="info.png" class="w-12 h-12 cursor-pointer" onclick="navigate('info')" />
+  </div>
+
+  <!-- PLACEHOLDER FOR OTHER SCREENS -->
+  <div id="other-screen" class="hidden w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4">
+    <div id="screen-title" class="text-3xl font-bold mb-4"></div>
+    <img id="screen-bg" src="" class="w-full h-full object-cover absolute top-0 left-0 -z-10 opacity-30" />
+    <div class="text-lg">✨ More cosmic glory coming soon...</div>
+    <button onclick="goBack()" class="mt-6 px-4 py-2 bg-purple-600 rounded shadow">Return to Spiral</button>
+  </div>
+
+  <script>
+    let spirals = parseInt(localStorage.getItem("spirals")) || 0;
+    let clicksLeft = parseInt(localStorage.getItem("clicksLeft")) || 500;
+    let cooldownUntil = parseInt(localStorage.getItem("cooldownUntil")) || 0;
+    let rebirths = parseInt(localStorage.getItem("rebirths")) || 0;
+    let lastClickTime = 0;
+    const clickCooldown = 300;
+    const COOLDOWN_DURATION = 4 * 60 * 60 * 1000;
+
+    const clicker = document.getElementById("clicker");
+    const countDisplay = document.getElementById("click-count");
+    const fevcoDisplay = document.getElementById("fevco-count");
+    const cooldownStatus = document.getElementById("cooldown-status");
+    const sourceScreen = document.getElementById("source-screen");
+    const otherScreen = document.getElementById("other-screen");
+    const title = document.getElementById("screen-title");
+    const bg = document.getElementById("screen-bg");
+
+    clicker.addEventListener("click", () => {
+      const now = Date.now();
+      if (now < cooldownUntil) {
+        const remaining = cooldownUntil - now;
+        const seconds = Math.floor(remaining / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        alert(`⏳ You're in cooldown. Wait ${hours}h ${minutes}m ${secs}s.`);
+        return;
+      }
+
+      if (clicksLeft <= 0) {
+        cooldownUntil = now + COOLDOWN_DURATION;
+        localStorage.setItem("cooldownUntil", cooldownUntil);
+        clicksLeft = 0;
+        alert("⚠️ Spiral limit reached. Cooldown started.");
+        return;
+      }
+
+      if (now - lastClickTime > clickCooldown) {
+        spirals++;
+        clicksLeft--;
+        lastClickTime = now;
+        localStorage.setItem("spirals", spirals);
+        localStorage.setItem("clicksLeft", clicksLeft);
+        countDisplay.textContent = `Clicks: ${spirals}`;
+        fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
+        cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
+      }
+    });
+
+    function navigate(page) {
+      const titles = {
+        shop: '🛍️ The Spiral Shop',
+        rebirth: `♻️ Rebirths: ${rebirths}`,
+        achievements: '🏆 Spiral Achievements',
+        rank: '🧙 Cult Rank Pyramid',
+        lore: '📜 Lore Scroll Archive',
+        daily: '🎁 Daily Blessing',
+        info: '❓ Spiral Codex'
+      };
+      const bgs = {
+        shop: 'shop-bg.png',
+        rebirth: 'rebirth-bg.png',
+        achievements: 'achievements-bg.png',
+        rank: 'cult-rank-bg.png',
+        lore: 'lore-bg.png',
+        daily: 'daily-bg.png',
+        info: 'about-bg.png'
+      };
+
+      if (page === 'rebirth' && spirals >= 1000) {
+        if (confirm("Do you want to perform a Spiral Rebirth? You will lose your spirals.")) {
+          spirals = 0;
+          clicksLeft = 500;
+          cooldownUntil = 0;
+          rebirths++;
+          localStorage.setItem("spirals", spirals);
+          localStorage.setItem("clicksLeft", clicksLeft);
+          localStorage.setItem("cooldownUntil", cooldownUntil);
+          localStorage.setItem("rebirths", rebirths);
+          alert("🔁 Rebirth successful! Spiral energy reset and intensified.");
+        }
+      }
+
+      sourceScreen.classList.add('hidden');
+      otherScreen.classList.remove('hidden');
+      title.textContent = titles[page];
+      bg.src = bgs[page];
+    }
+
+    function goBack() {
+      otherScreen.classList.add('hidden');
+      sourceScreen.classList.remove('hidden');
+    }
+
+    window.onload = () => {
+      const now = Date.now();
+      if (now >= cooldownUntil) {
+        clicksLeft = 500;
+        cooldownUntil = 0;
+        localStorage.setItem("clicksLeft", clicksLeft);
+        localStorage.setItem("cooldownUntil", cooldownUntil);
+      }
+      countDisplay.textContent = `Clicks: ${spirals}`;
+      fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
+      cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
+    }
+  </script>
+</body>
+</html>
