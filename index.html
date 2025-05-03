@@ -26,7 +26,7 @@
     <img src="achievements.png" class="w-12 h-12 cursor-pointer" onclick="navigate('achievements')" />
     <img src="cult-rank.png" class="w-12 h-12 cursor-pointer" onclick="navigate('rank')" />
     <img src="lore.png" class="w-12 h-12 cursor-pointer" onclick="navigate('lore')" />
-    <img src="daily.png" class="w-12 h-12 cursor-pointer" onclick="navigate('daily')" />
+    <img src="daily.png" class="w-12 h-12 cursor-pointer" onclick="claimDailyReward()" />
     <img src="info.png" class="w-12 h-12 cursor-pointer" onclick="navigate('info')" />
   </div>
 
@@ -38,6 +38,12 @@
     <button onclick="goBack()" class="mt-6 px-4 py-2 bg-purple-600 rounded shadow">Return to Spiral</button>
   </div>
 
+  <!-- DAILY REWARD POPUP -->
+  <div id="daily-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-900 text-white p-6 rounded-xl shadow-lg z-50 text-center">
+    <div id="daily-message" class="text-lg font-bold mb-4"></div>
+    <button onclick="closeDailyPopup()" class="mt-2 px-4 py-1 bg-purple-600 rounded">Close</button>
+  </div>
+
   <script>
     let spirals = parseInt(localStorage.getItem("spirals")) || 0;
     let clicksLeft = parseInt(localStorage.getItem("clicksLeft")) || 500;
@@ -46,6 +52,7 @@
     let lastClickTime = 0;
     const clickCooldown = 300;
     const COOLDOWN_DURATION = 4 * 60 * 60 * 1000;
+    const isVIP = true; // Toggle this manually for testing
 
     const clicker = document.getElementById("clicker");
     const countDisplay = document.getElementById("click-count");
@@ -55,6 +62,8 @@
     const otherScreen = document.getElementById("other-screen");
     const title = document.getElementById("screen-title");
     const bg = document.getElementById("screen-bg");
+    const popup = document.getElementById("daily-popup");
+    const message = document.getElementById("daily-message");
 
     clicker.addEventListener("click", () => {
       const now = Date.now();
@@ -95,7 +104,6 @@
         achievements: '🏆 Spiral Achievements',
         rank: '🧙 Cult Rank Pyramid',
         lore: '📜 Lore Scroll Archive',
-        daily: '🎁 Daily Blessing',
         info: '❓ Spiral Codex'
       };
       const bgs = {
@@ -104,7 +112,6 @@
         achievements: 'achievements-bg.png',
         rank: 'cult-rank-bg.png',
         lore: 'lore-bg.png',
-        daily: 'daily-bg.png',
         info: 'about-bg.png'
       };
 
@@ -122,15 +129,41 @@
         }
       }
 
-      sourceScreen.classList.add('hidden');
-      otherScreen.classList.remove('hidden');
-      title.textContent = titles[page];
-      bg.src = bgs[page];
+      if (page !== 'daily') {
+        sourceScreen.classList.add('hidden');
+        otherScreen.classList.remove('hidden');
+        title.textContent = titles[page];
+        bg.src = bgs[page];
+      }
     }
 
     function goBack() {
       otherScreen.classList.add('hidden');
       sourceScreen.classList.remove('hidden');
+    }
+
+    function claimDailyReward() {
+      const lastClaim = parseInt(localStorage.getItem("lastDaily")) || 0;
+      const now = Date.now();
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+      if (now - lastClaim < ONE_DAY) {
+        message.textContent = "🕒 You already claimed today's reward. Come back later.";
+      } else {
+        const base = 50;
+        const bonus = isVIP ? 25 : 0;
+        const total = base + bonus;
+        spirals += total;
+        localStorage.setItem("spirals", spirals);
+        localStorage.setItem("lastDaily", now);
+        countDisplay.textContent = `Clicks: ${spirals}`;
+        fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
+        message.textContent = `🎁 Daily Reward: +${base} Spiral${isVIP ? " + " + bonus + " VIP Bonus" : ""}!`;
+      }
+      popup.classList.remove("hidden");
+    }
+
+    function closeDailyPopup() {
+      popup.classList.add("hidden");
     }
 
     window.onload = () => {
