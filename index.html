@@ -186,24 +186,22 @@ let currentPage = "clicker";
     });
 
     function drawShop() {
-      ctx.fillStyle = "#fff";
-      ctx.font = "16px Arial";
-      ctx.fillText("🛍 Spiral Booster Shop", 200, 150);
-
-      ctx.font = "14px Arial";
+      ctx.fillStyle = "#222";
+      ctx.fillRect(120, 200, 160, 50);
       ctx.fillStyle = "#00ffcc";
-      ctx.fillText("Buy +500 Clicks Booster", 200, 220);
-      ctx.fillText("$1.99", 200, 240);
+      ctx.font = "bold 14px Arial";
+      ctx.fillText("+500 Clicks ($1.99)", 200, 230);
       ctx.strokeStyle = "#00ffcc";
       ctx.strokeRect(120, 200, 160, 50);
 
+      ctx.fillStyle = "#222";
+      ctx.fillRect(120, 300, 160, 50);
       ctx.fillStyle = "#ffcc00";
-      ctx.fillText("Buy Cooldown Bypass", 200, 320);
-      ctx.fillText("$2.99", 200, 340);
+      ctx.fillText("Bypass Cooldown ($2.99)", 200, 330);
       ctx.strokeStyle = "#ffcc00";
       ctx.strokeRect(120, 300, 160, 50);
 
-      canvas.addEventListener("click", handleShopClick);
+      
 
       // Booster Buttons (Styled)
       ctx.fillStyle = "#222";
@@ -248,6 +246,7 @@ let currentPage = "clicker";
           localStorage.setItem("clicksLeft", clicksLeft);
           
           alert("✅ You received +500 extra clicks!");
+          drawUI();
         }
       }
 
@@ -258,6 +257,7 @@ let currentPage = "clicker";
           localStorage.setItem("cooldownUntil", cooldownUntil);
           
           alert("✅ Cooldown cleared!");
+          drawUI();
         }
       }
     }
@@ -275,6 +275,8 @@ function drawLeaderboardPage() {
     }
 
     spiralImg.onload = drawUI;
+    canvas.addEventListener("click", handleShopClick);
+
     window.onload = () => {
       const now = Date.now();
       if (now >= cooldownUntil) {
