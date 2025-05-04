@@ -97,7 +97,7 @@ let currentPage = "clicker";
     function drawClicker() {
       const radius = 80 + Math.sin(clickAnimation) * 8;
 
-      if (spiralImg.complete && spiralImg.naturalHeight !== 0) {
+      if (spiralImg.complete && spiralImg.naturalHeight !== 0 && spiralImg.src) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(200, 240, radius, 0, Math.PI * 2);
@@ -200,24 +200,6 @@ let currentPage = "clicker";
       ctx.fillText("Bypass Cooldown ($2.99)", 200, 330);
       ctx.strokeStyle = "#ffcc00";
       ctx.strokeRect(120, 300, 160, 50);
-
-      
-
-      // Booster Buttons (Styled)
-      ctx.fillStyle = "#222";
-      ctx.fillRect(120, 200, 160, 50);
-      ctx.fillStyle = "#00ffcc";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText("+500 Clicks ($1.99)", 200, 230);
-      ctx.strokeStyle = "#00ffcc";
-      ctx.strokeRect(120, 200, 160, 50);
-
-      ctx.fillStyle = "#222";
-      ctx.fillRect(120, 300, 160, 50);
-      ctx.fillStyle = "#ffcc00";
-      ctx.fillText("Bypass Cooldown ($2.99)", 200, 330);
-      ctx.strokeStyle = "#ffcc00";
-      ctx.strokeRect(120, 300, 160, 50);
     }
 
     function drawAchievementsPage() {
@@ -241,6 +223,10 @@ let currentPage = "clicker";
 
       // Buy +500 Clicks Booster
       if (x > 120 && x < 280 && y > 200 && y < 250) {
+        if (clicksLeft >= 500) {
+          alert("⛔ You already have full clicks!");
+          return;
+        }
         if (confirm("Buy +500 Clicks for $1.99? (Simulated Purchase)")) {
           clicksLeft += 500;
           localStorage.setItem("clicksLeft", clicksLeft);
@@ -252,6 +238,10 @@ let currentPage = "clicker";
 
       // Bypass Cooldown
       if (x > 120 && x < 280 && y > 300 && y < 350) {
+        if (cooldownUntil === 0) {
+          alert("⛔ You're not in cooldown.");
+          return;
+        }
         if (confirm("Bypass Cooldown for $2.99? (Simulated Purchase)")) {
           cooldownUntil = 0;
           localStorage.setItem("cooldownUntil", cooldownUntil);
@@ -274,7 +264,9 @@ function drawLeaderboardPage() {
       requestAnimationFrame(animate);
     }
 
-    spiralImg.onload = drawUI;
+    spiralImg.onload = () => {
+      drawUI();
+    };
     canvas.addEventListener("click", handleShopClick);
 
     window.onload = () => {
