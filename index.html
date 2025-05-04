@@ -43,7 +43,8 @@
   <!-- SOURCE PAGE -->
   <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
     <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-   <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition transform hover:scale-105 active:scale-95 group focus:outline-none">
+  <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation">
+
   <!-- Glow ring -->
   <div class="absolute inset-0 rounded-full border-4 border-purple-500/30 animate-pulse z-10"></div>
 
@@ -159,15 +160,15 @@ clicker.addEventListener("click", () => {
     const message = document.getElementById("daily-message");
 
     function spawnSpark(x, y) {
-  const sparkCount = 24;
+  const sparkCount = 40;
   for (let i = 0; i < sparkCount; i++) {
     const spark = document.createElement('div');
-    spark.className = 'pointer-events-none fixed w-1.5 h-1.5 rounded-full z-50 blur-sm';
+    spark.className = 'pointer-events-none fixed w-2.5 h-2.5 rounded-full z-50 blur-md brightness-150';
     spark.style.backgroundColor = ['#facc15', '#e879f9', '#60a5fa', '#34d399'][Math.floor(Math.random() * 4)];
     spark.style.left = `${x}px`;
     spark.style.top = `${y}px`;
     spark.style.opacity = '1';
-    spark.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
+    spark.style.transition = 'transform 0.9s ease-out, opacity 0.9s ease-out';
 
     const angle = Math.random() * 2 * Math.PI;
     const distance = 30 + Math.random() * 60;
@@ -184,6 +185,8 @@ clicker.addEventListener("click", () => {
   }
 }
 
+  }
+  }
 
     function navigate(page) {
       const titles = {
