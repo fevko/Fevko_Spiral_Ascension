@@ -43,6 +43,12 @@
   <!-- SOURCE PAGE -->
   <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
     <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
+      <!-- Action Icons Row -->
+<div class="flex justify-center gap-4 mt-4 z-40">
+  <img src="daily.png" class="w-16 h-16 p-1 cursor-pointer object-contain rounded" onclick="claimDailyReward()" />
+  <img src="achievements.png" class="w-16 h-16 p-1 cursor-pointer object-contain rounded" onclick="navigate('achievements')" />
+  <img src="cult-rank.png" class="w-16 h-16 p-1 cursor-pointer object-contain rounded" onclick="navigate('rank')" />
+</div>
   <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation">
 
   <!-- Glow ring -->
@@ -55,7 +61,7 @@
   <span class="absolute w-full h-full rounded-full bg-purple-400/20 scale-0 group-active:scale-150 transition-transform duration-300 ease-out z-0"></span>
 </button>
 
-    </button>
+   
     <!-- Spiral HUD Panel (Top Center) -->
 <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/40 backdrop-blur-md border border-purple-700 px-6 py-3 rounded-xl shadow-lg text-center space-y-1 font-fell z-40">
   <div id="click-count" class="text-base text-white">🔘 Clicks: 0</div>
@@ -64,16 +70,10 @@
   <div id="cooldown-status" class="text-xs text-red-400">⏳ Clicks Left: 500</div>
 </div>
 
-  </div>
 
   <!-- FIXED NAV BUTTONS (2 rows) -->
   <div class="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50">
-    <!-- Top Row -->
-    <div class="flex justify-center gap-1.5 mt-2">
-      <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="claimDailyReward()" />
-      <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('achievements')" />
-      <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('rank')" />
-    </div>
+
     <!-- Bottom Row -->
     <div class="flex justify-center gap-1.5">
       <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
