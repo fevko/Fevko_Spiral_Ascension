@@ -452,7 +452,7 @@
     };
 
     // Initialize Telegram WebApp and Game
-    <script>
+<script>
 function initGameSafely() {
   if (window.Telegram && window.Telegram.WebApp) {
     try {
@@ -467,13 +467,13 @@ function initGameSafely() {
     Game.state.isVIP = false;
   }
 
-  console.log("Game started. VIP:", Game.state.isVIP); // Debug log
+  console.log("Game started. VIP:", Game.state.isVIP);
   Game.init();
 }
 
-// Run after DOM is ready
 window.addEventListener("DOMContentLoaded", initGameSafely);
 </script>
+
 
 </body>
 </html>
