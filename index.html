@@ -159,10 +159,10 @@ clicker.addEventListener("click", () => {
     const message = document.getElementById("daily-message");
 
     function spawnSpark(x, y) {
-  const sparkCount = 12;
+  const sparkCount = 24;
   for (let i = 0; i < sparkCount; i++) {
     const spark = document.createElement('div');
-    spark.className = 'pointer-events-none fixed w-1.5 h-1.5 rounded-full z-50';
+    spark.className = 'pointer-events-none fixed w-1.5 h-1.5 rounded-full z-50 blur-sm';
     spark.style.backgroundColor = ['#facc15', '#e879f9', '#60a5fa', '#34d399'][Math.floor(Math.random() * 4)];
     spark.style.left = `${x}px`;
     spark.style.top = `${y}px`;
