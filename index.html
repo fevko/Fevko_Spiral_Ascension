@@ -84,15 +84,15 @@
       updateUI();
     });
 
-    function navigate(page) {
+    window.navigate = function(page) {
       alert(`Navigating to ${page}. More cosmic glory coming soon!`);
     }
 
-    function goBack() {
+    window.goBack = function() {
       alert("Returning to the Spiral Core.");
     }
 
-    function claimDailyReward() {
+    window.claimDailyReward = function() {
       const lastClaim = parseInt(localStorage.getItem("lastDaily")) || 0;
       const now = Date.now();
       if (now - lastClaim < 86400000) return alert("Reward already claimed today!");
