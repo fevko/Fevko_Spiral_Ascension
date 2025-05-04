@@ -48,7 +48,7 @@
     <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="navigate('rank')" />
   </div>
   <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-  <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation">
+  <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation">
 
   <!-- Glow ring -->
   <div class="absolute inset-0 rounded-full border-4 border-purple-500/30 animate-pulse z-10"></div>
@@ -89,7 +89,7 @@
   </div>
 
   <!-- PLACEHOLDER FOR OTHER SCREENS -->
-  <div id="other-screen" class="hidden w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4">
+  <div id="other-screen" class="hidden z-50 w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4">
     <div id="screen-title" class="text-3xl font-bold mb-4"></div>
     <img id="screen-bg" src="" class="w-full h-full object-cover absolute top-0 left-0 -z-10 opacity-30" />
     <div class="text-lg">✨ More cosmic glory coming soon...</div>
@@ -203,7 +203,7 @@ clicker.addEventListener("click", () => {
       };
 
 
-      sourceScreen.classList.add('hidden');
+      sousourceScreen.style.display = 'none';
       otherScreen.classList.remove('hidden');
       title.textContent = titles[page];
       bg.src = bgs[page];
