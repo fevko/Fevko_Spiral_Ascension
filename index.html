@@ -27,7 +27,6 @@
     <div class="flex justify-center gap-1.5 mt-2">
       <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="claimDailyReward()" />
       <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('achievements')" />
-      <img src="rebirth.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('rebirth')" />
       <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('rank')" />
     </div>
     <!-- Bottom Row -->
@@ -63,7 +62,6 @@
     let spirals = parseInt(localStorage.getItem("spirals")) || 0;
     let clicksLeft = parseInt(localStorage.getItem("clicksLeft")) || 500;
     let cooldownUntil = parseInt(localStorage.getItem("cooldownUntil")) || 0;
-    let rebirths = parseInt(localStorage.getItem("rebirths")) || 0;
     let lastClickTime = 0;
     const clickCooldown = 300;
     const COOLDOWN_DURATION = 4 * 60 * 60 * 1000;
@@ -103,6 +101,7 @@ clicker.addEventListener("click", () => {
     countDisplay.textContent = `Clicks: ${spirals}`;
     fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
     cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
+    document.getElementById("rank-label").textContent = getRank(spirals);
   }
 });
     const countDisplay = document.getElementById("click-count");
@@ -144,7 +143,6 @@ clicker.addEventListener("click", () => {
     function navigate(page) {
       const titles = {
         shop: '🛍️ The Spiral Shop',
-        rebirth: `♻️ Rebirths: ${rebirths}`,
         achievements: '🏆 Spiral Achievements',
         rank: '🧙 Cult Rank Pyramid',
         lore: '📜 Lore Scroll Archive',
@@ -152,26 +150,12 @@ clicker.addEventListener("click", () => {
       };
       const bgs = {
         shop: 'shop-bg.png',
-        rebirth: 'rebirth-bg.png',
         achievements: 'achievements-bg.png',
         rank: 'cult-rank-bg.png',
         lore: 'lore-bg.png',
         info: 'about-bg.png'
       };
 
-      if (page === 'rebirth' && spirals >= 1000) {
-        if (confirm("Do you want to perform a Spiral Rebirth? You will lose your spirals.")) {
-          spirals = 0;
-          clicksLeft = 500;
-          cooldownUntil = 0;
-          rebirths++;
-          localStorage.setItem("spirals", spirals);
-          localStorage.setItem("clicksLeft", clicksLeft);
-          localStorage.setItem("cooldownUntil", cooldownUntil);
-          localStorage.setItem("rebirths", rebirths);
-          alert("🔁 Rebirth successful! Spiral energy reset and intensified.");
-        }
-      }
 
       sourceScreen.classList.add('hidden');
       otherScreen.classList.remove('hidden');
@@ -200,6 +184,8 @@ clicker.addEventListener("click", () => {
         countDisplay.textContent = `Clicks: ${spirals}`;
         fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
         message.textContent = `🎁 Daily Reward: +${base} Spiral${isVIP ? " + " + bonus + " VIP Bonus" : ""}!`;
+        document.getElementById("rank-label").textContent = getRank(spirals);
+
       }
       popup.classList.remove("hidden");
     }
@@ -219,6 +205,8 @@ clicker.addEventListener("click", () => {
       countDisplay.textContent = `Clicks: ${spirals}`;
       fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
       cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
+      document.getElementById("rank-label").textContent = getRank(spirals);
+
     }
     function getRank(spirals) {
       if (spirals >= 500000) return "👑 Meme Warlord";
