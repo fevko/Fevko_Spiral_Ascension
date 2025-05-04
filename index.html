@@ -80,9 +80,30 @@
     const message = document.getElementById("daily-message");
 
     function spawnSpark(x, y) {
-  const spark = document.createElement('div');
-  spark.className = 'pointer-events-none fixed w-2 h-2 bg-yellow-400 rounded-full z-50';
-  spark.style.left = `${x - 4}px`;
+  const sparkCount = 6;
+  for (let i = 0; i < sparkCount; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'pointer-events-none fixed w-2 h-2 rounded-full z-50';
+    spark.style.backgroundColor = ['#facc15', '#fcd34d', '#fde68a'][Math.floor(Math.random() * 3)];
+    spark.style.left = `${x}px`;
+    spark.style.top = `${y}px`;
+    spark.style.opacity = '1';
+    spark.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = 30 + Math.random() * 30;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+
+    document.body.appendChild(spark);
+    requestAnimationFrame(() => {
+      spark.style.transform = `translate(${dx}px, ${dy}px) scale(1.5)`;
+      spark.style.opacity = '0';
+    });
+
+    setTimeout(() => spark.remove(), 400);
+  }
+}px`;
   spark.style.top = `${y - 4}px`;
   spark.style.opacity = '1';
   spark.style.transition = 'all 0.4s ease-out';
