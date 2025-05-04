@@ -42,7 +42,7 @@
 
   <!-- SOURCE PAGE -->
   <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
-   <div class="flex justify-center gap-2 mb-3 z-40">
+   <div class="flex justify-center gap-2 mb-3 z-50 pointer-events-auto ">
     <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="claimDailyReward()" />
     <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="navigate('achievements')" />
     <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="navigate('rank')" />
@@ -187,6 +187,7 @@ clicker.addEventListener("click", () => {
 
 
     function navigate(page) {
+      console.log("Navigate called for:", page);
       const titles = {
         shop: '🛍️ The Spiral Shop',
         achievements: '🏆 Spiral Achievements',
