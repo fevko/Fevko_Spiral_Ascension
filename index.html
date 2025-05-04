@@ -3,103 +3,289 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FEVKO Spiral Clicker</title>
-  <script src="https://cdn.tailwindcss.com">  // Spiral Clicker Logic
-    let clickCount = 0;
-    let fevcoBalance = 0;
-
-    const clicker = document.getElementById("clicker");
-    const clickDisplay = document.getElementById("click-count");
-    const fevcoDisplay = document.getElementById("fevco-count");
-
-    if (clicker) {
-      clicker.addEventListener("click", () => {
-        clickCount++;
-        fevcoBalance += 0.1;
-        clickDisplay.textContent = `Clicks: ${clickCount}`;
-        fevcoDisplay.textContent = `FEVCOIN: ${fevcoBalance.toFixed(2)}`;
-      });
+  <title>Spiral Ascension</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle, #0b0010 0%, #1c0030 100%);
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
     }
+    .nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: #220044;
+      padding: 10px;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+      z-index: 1000;
+    }
+    .nav button {
+      background: #550088;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      margin-top: 20px;
+      background-color: #1c0030;
+      border: 2px solid #9900ff;
+      border-radius: 12px;
+    }
+  </style>
 </head>
-<body class="bg-black text-white font-sans relative overflow-hidden">
-
-  <!-- SOURCE PAGE -->
-  <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
-    <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-    <button id="clicker" class="w-80 h-80 rounded-full border-4 border-purple-500 bg-purple-700 bg-opacity-30 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition">
-      <img src="spiral-button.png" alt="Spiral Button" class="w-80 h-80" />
-    </button>
-    <div id="click-count" class="mt-4 text-lg">Clicks: 0</div>
-    <div id="fevco-count" class="text-sm text-purple-300 mt-1">FEVCOIN: 0.00</div>
-    <div id="cooldown-status" class="mt-2 text-red-400"></div>
+<body>
+  <h1>🌀 Spiral Ascension</h1>
+  <canvas id="gameCanvas" width="400" height="800"></canvas>
+  <div class="nav">
+    <button onclick="switchPage('clicker')">Home</button>
+    <button onclick="switchPage('shop')">Shop</button>
+    <button onclick="switchPage('achievements')">Achievements</button>
+    <button onclick="switchPage('rebirth')">Rebirth</button>
+    <button onclick="switchPage('leaderboard')">Leaderboard</button>
   </div>
-
-  <!-- FIXED NAV BUTTONS (2 rows with 4 each) -->
-  <div class="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2">
-    <!-- Top Row -->
-    <div class="flex justify-center gap-4 mb-1">
-      <img src="lore.png" class="w-20 h-20 cursor-pointer" onclick="navigate('lore')" />
-      <img src="daily.png" class="w-20 h-20 cursor-pointer" onclick="claimDailyReward()" />
-      <img src="info.png" class="w-20 h-20 cursor-pointer" onclick="navigate('info')" />
-      <img src="source.png" class="w-20 h-20 cursor-pointer" onclick="navigate('source')" title="Return to Source" />
-    </div>
-    <!-- Bottom Row -->
-    <div class="flex justify-center gap-4">
-      <img src="shop.png" class="w-20 h-20 cursor-pointer" onclick="navigate('shop')" />
-      <img src="rebirth.png" class="w-20 h-20 cursor-pointer" onclick="navigate('rebirth')" />
-      <img src="achievements.png" class="w-20 h-20 cursor-pointer" onclick="navigate('achievements')" />
-      <img src="cult-rank.png" class="w-20 h-20 cursor-pointer" onclick="navigate('rank')" />
-    </div>
-  </div>
-
-  <!-- PLACEHOLDER FOR OTHER SCREENS -->
-  <div id="other-screen" class="hidden w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4">
-    <div id="screen-title" class="text-3xl font-bold mb-4"></div>
-    <img id="screen-bg" src="" class="w-full h-full object-cover absolute top-0 left-0 -z-10 opacity-30" />
-    <div class="text-lg">✨ More cosmic glory coming soon...</div>
-    <button onclick="goBack()" class="mt-6 px-4 py-2 bg-purple-600 rounded shadow">Return to Spiral</button>
-  </div>
-
-  <!-- DAILY REWARD POPUP -->
-  <div id="daily-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-900 text-white p-6 rounded-xl shadow-lg z-50 text-center">
-    <div id="daily-message" class="text-lg font-bold mb-4"></div>
-    <button onclick="closeDailyPopup()" class="mt-2 px-4 py-1 bg-purple-600 rounded">Close</button>
-  </div>
-
-  <!-- SCRIPTS -->
   <script>
-    const sourceScreen = document.getElementById("source-screen");
-    const otherScreen = document.getElementById("other-screen");
-    const screenTitle = document.getElementById("screen-title");
-    const screenBg = document.getElementById("screen-bg");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-    function navigate(screen) {
-      sourceScreen.classList.add("hidden");
-      otherScreen.classList.remove("hidden");
-      screenTitle.textContent = screen.toUpperCase();
-      screenBg.src = `${screen}.png`;
+let currentPage = "clicker";
+    let clickAnimation = 0;
+
+    function switchPage(page) {
+      currentPage = page;
+      drawUI();
+      
+      
     }
 
-    function goBack() {
-      sourceScreen.classList.remove("hidden");
-      otherScreen.classList.add("hidden");
+    let spirals = parseInt(localStorage.getItem("spirals")) || 0;
+    let rebirths = parseInt(localStorage.getItem("rebirths")) || 0;
+    let lastClickTime = 0;
+    const clickCooldown = 300;
+    const COOLDOWN_DURATION = 4 * 60 * 60 * 1000;
+
+    let clicksLeft = parseInt(localStorage.getItem("clicksLeft")) || 500;
+    let cooldownUntil = parseInt(localStorage.getItem("cooldownUntil")) || 0;
+    const spiralImg = new Image();
+    spiralImg.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Archimedean_spiral.svg/240px-Archimedean_spiral.svg.png";
+
+    function drawUI() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (currentPage === "clicker") {
+        drawClicker();
+      } else if (currentPage === "shop") {
+        drawShop();
+      } else if (currentPage === "achievements") {
+        drawAchievementsPage();
+      } else if (currentPage === "rebirth") {
+        drawRebirthPage();
+      } else if (currentPage === "leaderboard") {
+        drawLeaderboardPage();
+      }
     }
 
-    function claimDailyReward() {
-      const fevcoCount = document.getElementById("fevco-count");
-      const popup = document.getElementById("daily-popup");
-      const message = document.getElementById("daily-message");
+    function drawClicker() {
+      const radius = 80 + Math.sin(clickAnimation) * 8;
 
-      message.textContent = "🎁 You've claimed 5.00 FEVCOIN!";
-      fevcoCount.textContent = "FEVCOIN: 5.00";
-      popup.classList.remove("hidden");
+      if (spiralImg.complete && spiralImg.naturalHeight !== 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(200, 240, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(spiralImg, 200 - radius, 240 - radius, radius * 2, radius * 2);
+        ctx.restore();
+        if (Date.now() < cooldownUntil) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(200, 240, radius + 5, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(255, 0, 100, ${0.5 + 0.5 * Math.sin(Date.now() / 300)})`;
+          ctx.lineWidth = 4;
+          ctx.stroke();
+          ctx.restore();
+        }
+      } else {
+        ctx.beginPath();
+        ctx.arc(200, 240, radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#9900cc";
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.font = "16px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("🌀", 200, 250);
+      }
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "18px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(`Spirals: ${spirals}`, 200, 440);
+      ctx.fillText(`FEVCOIN: ${(spirals / 500).toFixed(2)}`, 200, 470);
+
+      if (Date.now() < cooldownUntil) {
+        const seconds = Math.floor((cooldownUntil - Date.now()) / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        ctx.fillStyle = "#ff5555";
+        ctx.fillText(`Cooldown: ${hours}h ${minutes}m ${secs}s`, 200, 500);
+        // Cooldown bar
+        const percent = 1 - ((cooldownUntil - Date.now()) / COOLDOWN_DURATION);
+        ctx.fillStyle = "#9900ff";
+        ctx.fillRect(100, 520, 200 * percent, 10);
+        ctx.strokeStyle = "#ffffff";
+        ctx.strokeRect(100, 520, 200, 10);
+      } else {
+        ctx.fillStyle = "#00ffcc";
+        ctx.fillText(`Clicks Left: ${clicksLeft}`, 200, 500);
+      }
     }
 
-    function closeDailyPopup() {
-      const popup = document.getElementById("daily-popup");
-      popup.classList.add("hidden");
+    canvas.addEventListener("click", function (e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const now = Date.now();
+      if (currentPage !== "clicker") return;
+
+      if (now < cooldownUntil) {
+        alert("⏳ You're in cooldown. Wait before spiraling again.");
+        return;
+      }
+
+      const dx = x - 200;
+      const dy = y - 240;
+      if (dx * dx + dy * dy < 80 * 80) {
+        if (now - lastClickTime > clickCooldown) {
+          if (clicksLeft <= 0) {
+            cooldownUntil = now + COOLDOWN_DURATION;
+            localStorage.setItem("cooldownUntil", cooldownUntil);
+            clicksLeft = 0;
+            alert("⚠️ You've reached the spiral limit. Cooldown started.");
+            return;
+          }
+          spirals++;
+          clicksLeft--;
+          localStorage.setItem("spirals", spirals);
+          localStorage.setItem("clicksLeft", clicksLeft);
+          lastClickTime = now;
+          clickAnimation = 5;
+          
+          drawUI();
+        }
+      }
+    });
+
+    function drawShop() {
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px Arial";
+      ctx.fillText("🛍 Spiral Booster Shop", 200, 150);
+
+      ctx.font = "14px Arial";
+      ctx.fillStyle = "#00ffcc";
+      ctx.fillText("Buy +500 Clicks Booster", 200, 220);
+      ctx.fillText("$1.99", 200, 240);
+      ctx.strokeStyle = "#00ffcc";
+      ctx.strokeRect(120, 200, 160, 50);
+
+      ctx.fillStyle = "#ffcc00";
+      ctx.fillText("Buy Cooldown Bypass", 200, 320);
+      ctx.fillText("$2.99", 200, 340);
+      ctx.strokeStyle = "#ffcc00";
+      ctx.strokeRect(120, 300, 160, 50);
+
+      canvas.addEventListener("click", handleShopClick);
+
+      // Booster Buttons (Styled)
+      ctx.fillStyle = "#222";
+      ctx.fillRect(120, 200, 160, 50);
+      ctx.fillStyle = "#00ffcc";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText("+500 Clicks ($1.99)", 200, 230);
+      ctx.strokeStyle = "#00ffcc";
+      ctx.strokeRect(120, 200, 160, 50);
+
+      ctx.fillStyle = "#222";
+      ctx.fillRect(120, 300, 160, 50);
+      ctx.fillStyle = "#ffcc00";
+      ctx.fillText("Bypass Cooldown ($2.99)", 200, 330);
+      ctx.strokeStyle = "#ffcc00";
+      ctx.strokeRect(120, 300, 160, 50);
     }
+
+    function drawAchievementsPage() {
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px Arial";
+      ctx.fillText("🎯 Achievements Coming Soon...", 200, 200);
+    }
+
+    function drawRebirthPage() {
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px Arial";
+      ctx.fillText("🔁 Rebirths: " + rebirths, 200, 200);
+    }
+
+    function handleShopClick(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (currentPage !== "shop") return;
+
+      // Buy +500 Clicks Booster
+      if (x > 120 && x < 280 && y > 200 && y < 250) {
+        if (confirm("Buy +500 Clicks for $1.99? (Simulated Purchase)")) {
+          clicksLeft += 500;
+          localStorage.setItem("clicksLeft", clicksLeft);
+          
+          alert("✅ You received +500 extra clicks!");
+        }
+      }
+
+      // Bypass Cooldown
+      if (x > 120 && x < 280 && y > 300 && y < 350) {
+        if (confirm("Bypass Cooldown for $2.99? (Simulated Purchase)")) {
+          cooldownUntil = 0;
+          localStorage.setItem("cooldownUntil", cooldownUntil);
+          
+          alert("✅ Cooldown cleared!");
+        }
+      }
+    }
+
+function drawLeaderboardPage() {
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px Arial";
+      ctx.fillText("🏆 Leaderboard Coming Soon...", 200, 200);
+    }
+
+    function animate() {
+      clickAnimation = Math.max(0, clickAnimation - 0.25);
+      drawUI();
+      requestAnimationFrame(animate);
+    }
+
+    spiralImg.onload = drawUI;
+    window.onload = () => {
+      const now = Date.now();
+      if (now >= cooldownUntil) {
+        clicksLeft = 500;
+        cooldownUntil = 0;
+        localStorage.setItem("clicksLeft", clicksLeft);
+        localStorage.setItem("cooldownUntil", cooldownUntil);
+      }
+      drawUI();
+      animate();
+    };
   </script>
-
 </body>
 </html>
