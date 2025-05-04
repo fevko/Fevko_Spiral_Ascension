@@ -52,7 +52,39 @@
   </div>
 
   <!-- SCRIPTS -->
-  <script>/* existing script remains unchanged */</script>
+  <script>
+    const sourceScreen = document.getElementById("source-screen");
+    const otherScreen = document.getElementById("other-screen");
+    const screenTitle = document.getElementById("screen-title");
+    const screenBg = document.getElementById("screen-bg");
+
+    function navigate(screen) {
+      sourceScreen.classList.add("hidden");
+      otherScreen.classList.remove("hidden");
+      screenTitle.textContent = screen.toUpperCase();
+      screenBg.src = `${screen}.png`;
+    }
+
+    function goBack() {
+      sourceScreen.classList.remove("hidden");
+      otherScreen.classList.add("hidden");
+    }
+
+    function claimDailyReward() {
+      const fevcoCount = document.getElementById("fevco-count");
+      const popup = document.getElementById("daily-popup");
+      const message = document.getElementById("daily-message");
+
+      message.textContent = "🎁 You've claimed 5.00 FEVCOIN!";
+      fevcoCount.textContent = "FEVCOIN: 5.00";
+      popup.classList.remove("hidden");
+    }
+
+    function closeDailyPopup() {
+      const popup = document.getElementById("daily-popup");
+      popup.classList.add("hidden");
+    }
+  </script>
 
 </body>
 </html>
