@@ -159,28 +159,31 @@ clicker.addEventListener("click", () => {
     const message = document.getElementById("daily-message");
 
     function spawnSpark(x, y) {
-  const sparkCount = 6;
+  const sparkCount = 12;
   for (let i = 0; i < sparkCount; i++) {
     const spark = document.createElement('div');
-    spark.className = 'pointer-events-none fixed w-2 h-2 rounded-full z-50';
-    spark.style.backgroundColor = ['#facc15', '#fcd34d', '#fde68a'][Math.floor(Math.random() * 3)];
+    spark.className = 'pointer-events-none fixed w-1.5 h-1.5 rounded-full z-50';
+    spark.style.backgroundColor = ['#facc15', '#e879f9', '#60a5fa', '#34d399'][Math.floor(Math.random() * 4)];
     spark.style.left = `${x}px`;
     spark.style.top = `${y}px`;
     spark.style.opacity = '1';
-    spark.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+    spark.style.transition = 'transform 0.6s ease-out, opacity 0.6s ease-out';
 
     const angle = Math.random() * 2 * Math.PI;
-    const distance = 30 + Math.random() * 30;
+    const distance = 30 + Math.random() * 60;
     const dx = Math.cos(angle) * distance;
     const dy = Math.sin(angle) * distance;
 
     document.body.appendChild(spark);
     requestAnimationFrame(() => {
-      spark.style.transform = `translate(${dx}px, ${dy}px) scale(1.5)`;
+      spark.style.transform = `translate(${dx}px, ${dy}px) scale(1.4)`;
       spark.style.opacity = '0';
     });
 
-    setTimeout(() => spark.remove(), 400);
+    setTimeout(() => spark.remove(), 600);
+  }
+}
+
   }
   }
 
