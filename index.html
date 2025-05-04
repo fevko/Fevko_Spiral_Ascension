@@ -216,7 +216,7 @@ let currentPage = "clicker";
 
     function drawAchievementsPage() {
       const bg = new Image();
-      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/achievements-bg.png";
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/achievements.png";
       if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
       else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
@@ -276,7 +276,7 @@ let currentPage = "clicker";
 
 function drawLeaderboardPage() {
       const bg = new Image();
-      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/source_bg.png";
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/source.png";
       if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
       else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
