@@ -11,51 +11,29 @@
   <!-- SOURCE PAGE -->
   <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
     <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-    <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-500 bg-purple-700 bg-opacity-30 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition hover:shadow-purple-500 hover:ring-4 hover:ring-purple-700 animate-pulse relative overflow-hidden"""">
-      <img src="spiral-button.png" alt="Spiral Button" class="w-full h-full p-3 object-contain rounded-full overflow-hidden pointer-events-none absolute top-0 left-0 z-0" />
-      <span class="absolute w-full h-full rounded-full z-10 bg-purple-500/20 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></span" />
+    <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-500 bg-purple-700 bg-opacity-30 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition hover:shadow-purple-500 hover:ring-4 hover:ring-purple-700 animate-pulse relative overflow-hidden">
+      <img src="spiral-button.png" alt="Spiral Button" class="w-full h-full p-3 object-contain rounded-full pointer-events-none absolute top-0 left-0 z-0" />
+      <span class="absolute w-full h-full rounded-full z-10 bg-purple-500/20 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></span>
     </button>
     <div id="click-count" class="mt-4 text-lg">Clicks: 0</div>
     <div id="fevco-count" class="text-sm text-purple-300 mt-1">FEVCOIN: 0.00</div>
     <div id="cooldown-status" class="mt-2 text-red-400"></div>
   </div>
 
-  <!-- FIXED NAV BUTTONS (2 rows) -->
+  <!-- FIXED NAV BUTTONS -->
   <div class="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50">
-    <!-- Top Row -->
     <div class="flex justify-center gap-1.5 mt-2">
-      <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="claimDailyReward()" />
-      <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('achievements')" />
-      <img src="rebirth.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('rebirth')" />
-      <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('rank')" />
+      <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer" onclick="claimDailyReward()" />
+      <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer" onclick="navigate('achievements')" />
+      <img src="rebirth.png" class="w-24 h-24 p-1.5 cursor-pointer" onclick="navigate('rebirth')" />
+      <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer" onclick="navigate('rank')" />
     </div>
-    <!-- Bottom Row -->
     <div class="flex justify-center gap-1.5">
-      <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
-  <img src="source.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" onclick="goBack()" />
-</div>
-
-      <img src="shop.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('shop')" />
-      <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('lore')" />
-      <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
-  <img src="info.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" onclick="navigate('info')" />
-</div>
-
+      <img src="source.png" class="w-24 h-24 p-1.5 cursor-pointer scale-[0.75]" onclick="goBack()" />
+      <img src="shop.png" class="w-24 h-24 p-1.5 cursor-pointer" onclick="navigate('shop')" />
+      <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer" onclick="navigate('lore')" />
+      <img src="info.png" class="w-24 h-24 p-1.5 cursor-pointer scale-[0.75]" onclick="navigate('info')" />
     </div>
-  </div>
-
-  <!-- PLACEHOLDER FOR OTHER SCREENS -->
-  <div id="other-screen" class="hidden w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4">
-    <div id="screen-title" class="text-3xl font-bold mb-4"></div>
-    <img id="screen-bg" src="" class="w-full h-full object-cover absolute top-0 left-0 -z-10 opacity-30" />
-    <div class="text-lg">✨ More cosmic glory coming soon...</div>
-    <button onclick="goBack()" class="mt-6 px-4 py-2 bg-purple-600 rounded shadow">Return to Spiral</button>
-  </div>
-
-  <!-- DAILY REWARD POPUP -->
-  <div id="daily-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-900 text-white p-6 rounded-xl shadow-lg z-50 text-center">
-    <div id="daily-message" class="text-lg font-bold mb-4"></div>
-    <button onclick="closeDailyPopup()" class="mt-2 px-4 py-1 bg-purple-600 rounded">Close</button>
   </div>
 
   <script>
@@ -63,173 +41,76 @@
     let clicksLeft = parseInt(localStorage.getItem("clicksLeft")) || 500;
     let cooldownUntil = parseInt(localStorage.getItem("cooldownUntil")) || 0;
     let rebirths = parseInt(localStorage.getItem("rebirths")) || 0;
-    let lastClickTime = 0;
     const clickCooldown = 300;
     const COOLDOWN_DURATION = 4 * 60 * 60 * 1000;
-    const isVIP = true; // Toggle this manually for testing
+    const isVIP = true;
 
     const clicker = document.getElementById("clicker");
     const countDisplay = document.getElementById("click-count");
     const fevcoDisplay = document.getElementById("fevco-count");
     const cooldownStatus = document.getElementById("cooldown-status");
-    const sourceScreen = document.getElementById("source-screen");
-    const otherScreen = document.getElementById("other-screen");
-    const title = document.getElementById("screen-title");
-    const bg = document.getElementById("screen-bg");
-    const popup = document.getElementById("daily-popup");
-    const message = document.getElementById("daily-message");
 
     function spawnSpark(x, y) {
-  const sparkCount = 6;
-  for (let i = 0; i < sparkCount; i++) {
-    const spark = document.createElement('div');
-    spark.className = 'pointer-events-none fixed w-2 h-2 rounded-full z-50';
-    spark.style.backgroundColor = ['#facc15', '#fcd34d', '#fde68a'][Math.floor(Math.random() * 3)];
-    spark.style.left = `${x}px`;
-    spark.style.top = `${y}px`;
-    spark.style.opacity = '1';
-    spark.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+      for (let i = 0; i < 6; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'pointer-events-none fixed w-2 h-2 rounded-full z-50';
+        spark.style.backgroundColor = ['#facc15', '#fcd34d', '#fde68a'][Math.floor(Math.random() * 3)];
+        spark.style.left = `${x}px`;
+        spark.style.top = `${y}px`;
+        spark.style.opacity = '1';
+        spark.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
 
-    const angle = Math.random() * 2 * Math.PI;
-    const distance = 30 + Math.random() * 30;
-    const dx = Math.cos(angle) * distance;
-    const dy = Math.sin(angle) * distance;
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 30 + Math.random() * 30;
+        document.body.appendChild(spark);
 
-    document.body.appendChild(spark);
-    requestAnimationFrame(() => {
-      spark.style.transform = `translate(${dx}px, ${dy}px) scale(1.5)`;
-      spark.style.opacity = '0';
-    });
+        requestAnimationFrame(() => {
+          spark.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(1.5)`;
+          spark.style.opacity = '0';
+        });
 
-    setTimeout(() => spark.remove(), 400);
-  }
-}px`;
-  spark.style.top = `${y - 4}px`;
-  spark.style.opacity = '1';
-  spark.style.transition = 'all 0.4s ease-out';
-  document.body.appendChild(spark);
-  setTimeout(() => {
-    spark.style.transform = 'scale(3)';
-    spark.style.opacity = '0';
-  }, 10);
-  setTimeout(() => spark.remove(), 410);
-}
+        setTimeout(() => spark.remove(), 400);
+      }
+    }
 
-$1
+    clicker.addEventListener("click", () => {
       const now = Date.now();
-      if (now < cooldownUntil) {
-        const remaining = cooldownUntil - now;
-        const seconds = Math.floor(remaining / 1000);
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-        alert(`⏳ You're in cooldown. Wait ${hours}h ${minutes}m ${secs}s.`);
-        return;
-      }
-
-      if (clicksLeft <= 0) {
-        cooldownUntil = now + COOLDOWN_DURATION;
-        localStorage.setItem("cooldownUntil", cooldownUntil);
-        clicksLeft = 0;
-        alert("⚠️ Spiral limit reached. Cooldown started.");
-        return;
-      }
-
-      if (now - lastClickTime > clickCooldown) {
-        spirals++;
-        clicksLeft--;
-        lastClickTime = now;
-        const rect = clicker.getBoundingClientRect();
-        const sparkX = rect.left + rect.width / 2;
-        const sparkY = rect.top + rect.height / 2;
-        spawnSpark(sparkX, sparkY);
-        localStorage.setItem("spirals", spirals);
-        localStorage.setItem("clicksLeft", clicksLeft);
-        countDisplay.textContent = `Clicks: ${spirals}`;
-        fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
-        cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
-      }
+      if (now < cooldownUntil || clicksLeft <= 0) return;
+      spirals++;
+      clicksLeft--;
+      spawnSpark(window.innerWidth / 2, window.innerHeight / 2);
+      localStorage.setItem("spirals", spirals);
+      localStorage.setItem("clicksLeft", clicksLeft);
+      updateUI();
     });
 
     function navigate(page) {
-      const titles = {
-        shop: '🛍️ The Spiral Shop',
-        rebirth: `♻️ Rebirths: ${rebirths}`,
-        achievements: '🏆 Spiral Achievements',
-        rank: '🧙 Cult Rank Pyramid',
-        lore: '📜 Lore Scroll Archive',
-        info: '❓ Spiral Codex'
-      };
-      const bgs = {
-        shop: 'shop-bg.png',
-        rebirth: 'rebirth-bg.png',
-        achievements: 'achievements-bg.png',
-        rank: 'cult-rank-bg.png',
-        lore: 'lore-bg.png',
-        info: 'about-bg.png'
-      };
-
-      if (page === 'rebirth' && spirals >= 1000) {
-        if (confirm("Do you want to perform a Spiral Rebirth? You will lose your spirals.")) {
-          spirals = 0;
-          clicksLeft = 500;
-          cooldownUntil = 0;
-          rebirths++;
-          localStorage.setItem("spirals", spirals);
-          localStorage.setItem("clicksLeft", clicksLeft);
-          localStorage.setItem("cooldownUntil", cooldownUntil);
-          localStorage.setItem("rebirths", rebirths);
-          alert("🔁 Rebirth successful! Spiral energy reset and intensified.");
-        }
-      }
-
-      sourceScreen.classList.add('hidden');
-      otherScreen.classList.remove('hidden');
-      title.textContent = titles[page];
-      bg.src = bgs[page];
+      alert(`Navigating to ${page}. More cosmic glory coming soon!`);
     }
 
     function goBack() {
-      otherScreen.classList.add('hidden');
-      sourceScreen.classList.remove('hidden');
+      alert("Returning to the Spiral Core.");
     }
 
     function claimDailyReward() {
       const lastClaim = parseInt(localStorage.getItem("lastDaily")) || 0;
       const now = Date.now();
-      const ONE_DAY = 24 * 60 * 60 * 1000;
-      if (now - lastClaim < ONE_DAY) {
-        message.textContent = "🕒 You already claimed today's reward. Come back later.";
-      } else {
-        const base = 50;
-        const bonus = isVIP ? 25 : 0;
-        const total = base + bonus;
-        spirals += total;
-        localStorage.setItem("spirals", spirals);
-        localStorage.setItem("lastDaily", now);
-        countDisplay.textContent = `Clicks: ${spirals}`;
-        fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
-        message.textContent = `🎁 Daily Reward: +${base} Spiral${isVIP ? " + " + bonus + " VIP Bonus" : ""}!`;
-      }
-      popup.classList.remove("hidden");
+      if (now - lastClaim < 86400000) return alert("Reward already claimed today!");
+      const reward = isVIP ? 75 : 50;
+      spirals += reward;
+      localStorage.setItem("spirals", spirals);
+      localStorage.setItem("lastDaily", now);
+      updateUI();
+      alert(`Daily Reward claimed: ${reward} spirals!`);
     }
 
-    function closeDailyPopup() {
-      popup.classList.add("hidden");
-    }
-
-    window.onload = () => {
-      const now = Date.now();
-      if (now >= cooldownUntil) {
-        clicksLeft = 500;
-        cooldownUntil = 0;
-        localStorage.setItem("clicksLeft", clicksLeft);
-        localStorage.setItem("cooldownUntil", cooldownUntil);
-      }
+    function updateUI() {
       countDisplay.textContent = `Clicks: ${spirals}`;
       fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
       cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
     }
+
+    updateUI();
   </script>
 </body>
 </html>
