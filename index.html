@@ -99,7 +99,7 @@ let currentPage = "clicker";
 
     function drawClicker() {
       const bg = new Image();
-      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/index.html";
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/bg-stars.png";
       if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
       else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
       const radius = 80 + Math.sin(clickAnimation) * 8;
