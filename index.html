@@ -17,6 +17,7 @@
     </button>
     <div id="click-count" class="mt-4 text-lg">Clicks: 0</div>
     <div id="fevco-count" class="text-sm text-purple-300 mt-1">FEVCOIN: 0.00</div>
+    <div id="rank-label" class="mt-2 text-purple-400 text-lg">🐣 Spiral Seedling</div>
     <div id="cooldown-status" class="mt-2 text-red-400"></div>
   </div>
 
@@ -219,6 +220,14 @@ clicker.addEventListener("click", () => {
       fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
       cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
     }
+    function getRank(spirals) {
+      if (spirals >= 500000) return "👑 Meme Warlord";
+      if (spirals >= 100000) return "🧙 Spiral Prophet";
+      if (spirals >= 50000) return "🔮 Meme Adept";
+      if (spirals >= 2000) return "🌱 Spiral Initiate";
+      return "🐣 Spiral Seedling";
+}
+
   </script>
 </body>
 </html>
