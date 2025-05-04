@@ -453,27 +453,28 @@
 
 
     // Initialize Telegram WebApp and Game
-function initGameSafely() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    try {
-      window.Telegram.WebApp.ready();
-      Game.state.isVIP = !!window.Telegram.WebApp.initDataUnsafe?.user?.is_premium;
-    } catch (err) {
-      console.warn("Telegram init failed:", err);
+    
+<script>
+  function initGameSafely() {
+    if (window.Telegram && window.Telegram.WebApp) {
+      try {
+        window.Telegram.WebApp.ready();
+        Game.state.isVIP = !!window.Telegram.WebApp.initDataUnsafe?.user?.is_premium;
+      } catch (err) {
+        console.warn("Telegram init failed:", err);
+        Game.state.isVIP = false;
+      }
+    } else {
+      console.warn("Telegram not available — running in browser.");
       Game.state.isVIP = false;
     }
-  } else {
-    console.warn("Telegram not available — running in browser.");
-    Game.state.isVIP = false;
+
+    console.log("Game started. VIP:", Game.state.isVIP);
+    Game.init();
   }
 
-  console.log("Game started. VIP:", Game.state.isVIP);
-  Game.init();
-}
-
-window.addEventListener("DOMContentLoaded", initGameSafely);
-
-
+  window.addEventListener("DOMContentLoaded", initGameSafely);
+</script>
 
 
 </body>
