@@ -43,9 +43,9 @@
   <!-- SOURCE PAGE -->
   <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
    <div class="flex justify-center gap-2 mb-3 z-50 pointer-events-auto ">
-    <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="claimDailyReward()" />
-    <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="navigate('achievements')" />
-    <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded" onclick="navigate('rank')" />
+    <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="claimDailyReward()" />
+    <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('achievements')" />
+    <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('rank')" />
   </div>
   <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
   <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation">
@@ -79,8 +79,8 @@
   <img src="source.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" onclick="goBack()" />
 </div>
 
-      <img src="shop.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('shop')" />
-      <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden" onclick="navigate('lore')" />
+      <img src="shop.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('shop')" />
+      <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('lore')" />
       <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
   <img src="info.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" onclick="navigate('info')" />
 </div>
