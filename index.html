@@ -37,7 +37,9 @@
     canvas {
       display: block;
       margin: 20px auto;
-      background: linear-gradient(145deg, #1c0030, #0b0010);
+      background-image: url('https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/bg-stars.png');
+      background-size: cover;
+      background-position: center;
       border: 3px solid #bb00ff;
       border-radius: 20px;
       box-shadow: 0 0 20px #7700cc;
@@ -49,11 +51,11 @@
   <h1>🌀 Spiral Ascension</h1>
   <canvas id="gameCanvas" width="400" height="800"></canvas>
   <div class="nav">
-    <button onclick="switchPage('clicker')">Home</button>
-    <button onclick="switchPage('shop')">Shop</button>
-    <button onclick="switchPage('achievements')">Achievements</button>
-    <button onclick="switchPage('rebirth')">Rebirth</button>
-    <button onclick="switchPage('leaderboard')">Leaderboard</button>
+    <button onclick="switchPage('clicker')" style="background-image: url('https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/home.png'); width: 64px; height: 64px; background-size: cover; border: none;"></button>
+    <button onclick="switchPage('shop')" style="background-image: url('https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/shop.png'); width: 64px; height: 64px; background-size: cover; border: none;"></button>
+    <button onclick="switchPage('achievements')" style="background-image: url('https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/achievements.png'); width: 64px; height: 64px; background-size: cover; border: none;"></button>
+    <button onclick="switchPage('rebirth')" style="background-image: url('https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/rebirth.png'); width: 64px; height: 64px; background-size: cover; border: none;"></button>
+    <button onclick="switchPage('leaderboard')" style="background-image: url('https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/source.png'); width: 64px; height: 64px; background-size: cover; border: none;"></button>
   </div>
   <script>
     const canvas = document.getElementById("gameCanvas");
@@ -96,6 +98,10 @@ let currentPage = "clicker";
     }
 
     function drawClicker() {
+      const bg = new Image();
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/index.html";
+      if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
       const radius = 80 + Math.sin(clickAnimation) * 8;
 
       if (spiralImg.complete && spiralImg.naturalHeight !== 0 && spiralImg.src) {
@@ -187,6 +193,11 @@ let currentPage = "clicker";
     });
 
     function drawShop() {
+      const bg = new Image();
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/shop.png";
+      if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = "#222";
       ctx.fillRect(120, 200, 160, 50);
       ctx.fillStyle = "#00ffcc";
@@ -204,12 +215,22 @@ let currentPage = "clicker";
     }
 
     function drawAchievementsPage() {
+      const bg = new Image();
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/achievements-bg.png";
+      if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = "#fff";
       ctx.font = "16px Arial";
       ctx.fillText("🎯 Achievements Coming Soon...", 200, 200);
     }
 
     function drawRebirthPage() {
+      const bg = new Image();
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/rebirth_bg.png";
+      if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = "#fff";
       ctx.font = "16px Arial";
       ctx.fillText("🔁 Rebirths: " + rebirths, 200, 200);
@@ -254,6 +275,11 @@ let currentPage = "clicker";
     }
 
 function drawLeaderboardPage() {
+      const bg = new Image();
+      bg.src = "https://raw.githubusercontent.com/fevko/Fevko_Spiral_Ascension/main/images/source_bg.png";
+      if (bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+      else bg.onload = () => ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = "#fff";
       ctx.font = "16px Arial";
       ctx.fillText("🏆 Leaderboard Coming Soon...", 200, 200);
