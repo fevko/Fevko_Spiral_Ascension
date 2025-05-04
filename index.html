@@ -186,6 +186,7 @@ clicker.addEventListener("click", () => {
 }
 
 
+
     function navigate(page) {
       const titles = {
         shop: '🛍️ The Spiral Shop',
@@ -257,6 +258,16 @@ clicker.addEventListener("click", () => {
           loader.classList.add("opacity-0");
           setTimeout(() => loader.style.display = "none", 700);
         }, 1000);
+
+        // Failsafe: Force hide loading screen after 5s if not already removed
+      setTimeout(() => {
+          const loader = document.getElementById("loading-screen");
+          if (loader && loader.style.display !== "none") {
+            loader.classList.add("opacity-0");
+            setTimeout(() => loader.style.display = "none", 700);
+          }
+        }, 5000);
+
 
 
     }
