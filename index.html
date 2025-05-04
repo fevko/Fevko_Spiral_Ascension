@@ -8,8 +8,11 @@
   <!-- Tailwind & Google Font -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Tailwind Font Config -->
+  <!-- Tailwind Config -->
   <script>
     tailwind.config = {
       theme: {
@@ -21,268 +24,436 @@
       }
     }
   </script>
+
+  <!-- Custom CSS -->
+  <style>
+    @keyframes spark {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(1.4); opacity: 0; }
+    }
+
+    .spark {
+      pointer-events-none;
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      z-index: 50;
+      filter: blur(2px);
+      animation: spark 0.9s ease-out forwards;
+    }
+  </style>
 </head>
-
-<!-- ✅ Use font-fell here instead of font-sans -->
 <body class="bg-black text-white font-fell relative overflow-hidden">
-
-
-
-<!-- LOADING SCREEN -->
-<div id="loading-screen" class="fixed inset-0 bg-black flex items-center justify-center z-50 flex-col transition-opacity duration-700 opacity-100">
-  <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-500 border-opacity-50 mb-4"></div>
-  <div class="text-purple-300 text-lg font-bold">Loading the Spiral...</div>
-</div>
-
-<!-- RESET BUTTON -->
-<button onclick="resetGame()" class="fixed top-4 right-4 bg-red-700 px-3 py-1 rounded text-white z-50">
-  🔁 Reset Game
-</button>
-
-
-  <!-- SOURCE PAGE -->
-  <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
-   <div class="flex justify-center gap-2 mb-3 z-50 pointer-events-auto ">
-    <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="claimDailyReward()" />
-    <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('achievements')" />
-    <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('rank')" />
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="fixed inset-0 bg-black flex items-center justify-center z-50 flex-col transition-opacity duration-700 opacity-100">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-500 border-opacity-50 mb-4"></div>
+    <div class="text-purple-300 text-lg font-bold">Loading the Spiral...</div>
   </div>
-  <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-  <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation">
 
-  <!-- Glow ring -->
-  <div class="absolute inset-0 rounded-full border-4 border-purple-500/30 animate-pulse z-10"></div>
+  <!-- Reset Button -->
+  <button id="reset-button" class="fixed top-4 right-4 bg-red-700 px-3 py-1 rounded text-white z-50" aria-label="Reset game">
+    🔁 Reset Game
+  </button>
 
-  <!-- Spiral Image -->
-  <img src="spiral-button.png" alt="Spiral Button" class="w-full h-full p-4 object-contain rounded-full pointer-events-none relative z-20" />
+  <!-- Source Screen -->
+  <div id="source-screen" class="w-full h-screen bg-cover bg-center flex flex-col items-center justify-center" style="background-image: url('source-bg.png');">
+    <div class="flex justify-center gap-2 mb-3 z-50 pointer-events-auto">
+      <img src="daily.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="daily-button" aria-label="Claim daily reward" />
+      <img src="achievements.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="achievements-button" aria-label="View achievements" />
+      <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="rank-button" aria-label="View rank" />
+    </div>
+    <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
+    <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation" aria-label="Click to earn spirals" tabindex="0">
+      <!-- Glow Ring -->
+      <div class="absolute inset-0 rounded-full border-4 border-purple-500/30 animate-pulse z-10"></div>
+      <!-- Spiral Image -->
+      <img src="spiral-button.png" alt="Spiral Button" class="w-full h-full p-4 object-contain rounded-full pointer-events-none relative z-20" />
+      <!-- Impact Pulse -->
+      <span class="absolute w-full h-full rounded-full bg-purple-400/20 scale-0 group-active:scale-150 transition-transform duration-300 ease-out z-0"></span>
+    </button>
 
-  <!-- Impact pulse -->
-  <span class="absolute w-full h-full rounded-full bg-purple-400/20 scale-0 group-active:scale-150 transition-transform duration-300 ease-out z-0"></span>
-</button>
+    <!-- Spiral HUD Panel -->
+    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/40 backdrop-blur-md border border-purple-700 px-6 py-3 rounded-xl shadow-lg text-center space-y-1 font-fell z-40">
+      <div id="click-count" class="text-base text-white">🔘 Clicks: 0</div>
+      <div id="fevco-count" class="text-sm text-yellow-300">💰 FEVCOIN: 0.00</div>
+      <div id="rank-label" class="text-sm text-pink-400">🧬 Rank: Spiral Seedling</div>
+      <div id="cooldown-status" class="text-xs text-red-400">⏳ Clicks Left: 500</div>
+    </div>
 
-   
-    <!-- Spiral HUD Panel (Top Center) -->
-<div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/40 backdrop-blur-md border border-purple-700 px-6 py-3 rounded-xl shadow-lg text-center space-y-1 font-fell z-40">
-  <div id="click-count" class="text-base text-white">🔘 Clicks: 0</div>
-  <div id="fevco-count" class="text-sm text-yellow-300">💰 FEVCOIN: 0.00</div>
-  <div id="rank-label" class="text-sm text-pink-400">🧬 Rank: Spiral Seedling</div>
-  <div id="cooldown-status" class="text-xs text-red-400">⏳ Clicks Left: 500</div>
-</div>
-
-
-  <!-- FIXED NAV BUTTONS (2 rows) -->
-  <div class="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50">
-
-    <!-- Bottom Row -->
-    <div class="flex justify-center gap-1.5">
-      <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
-  <img src="source.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" onclick="goBack()" />
-</div>
-
-      <img src="shop.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('shop')" />
-      <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" onclick="navigate('lore')" />
-      <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
-  <img src="info.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" onclick="navigate('info')" />
-</div>
-
+    <!-- Navigation Buttons -->
+    <div class="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50">
+      <div class="flex justify-center gap-1.5">
+        <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
+          <img src="source.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" id="source-button" aria-label="Go to source screen" />
+        </div>
+        <img src="shop.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="shop-button" aria-label="Visit shop" />
+        <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="lore-button" aria-label="View lore" />
+        <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
+          <img src="info.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer" id="info-button" aria-label="View info" />
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- PLACEHOLDER FOR OTHER SCREENS -->
-  <div id="other-screen" class="hidden z-50 w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4">
+  <!-- Other Screens -->
+  <div id="other-screen" class="hidden w-full h-screen bg-cover bg-center flex flex-col items-center justify-center text-center px-4 z-50">
     <div id="screen-title" class="text-3xl font-bold mb-4"></div>
     <img id="screen-bg" src="" class="w-full h-full object-cover absolute top-0 left-0 -z-10 opacity-30" />
-    <div class="text-lg">✨ More cosmic glory coming soon...</div>
-    <button onclick="goBack()" class="mt-6 px-4 py-2 bg-purple-600 rounded shadow">Return to Spiral</button>
+    <div id="screen-content" class="text-lg"></div>
+    <button id="back-button" class="mt-6 px-4 py-2 bg-purple-600 rounded shadow" aria-label="Return to main screen">Return to Spiral</button>
   </div>
 
-  <!-- DAILY REWARD POPUP -->
+  <!-- Daily Reward Popup -->
   <div id="daily-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-900 text-white p-6 rounded-xl shadow-lg z-50 text-center">
     <div id="daily-message" class="text-lg font-bold mb-4"></div>
-    <button onclick="closeDailyPopup()" class="mt-2 px-4 py-1 bg-purple-600 rounded">Close</button>
+    <button id="close-daily-popup" class="mt-2 px-4 py-1 bg-purple-600 rounded" aria-label="Close daily reward popup">Close</button>
   </div>
 
+  <!-- Cooldown Popup -->
+  <div id="cooldown-popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-900 text-white p-6 rounded-xl shadow-lg z-50 text-center">
+    <div id="cooldown-message" class="text-lg font-bold mb-4"></div>
+    <button id="close-cooldown-popup" class="mt-2 px-4 py-1 bg-purple-600 rounded" aria-label="Close cooldown popup">Close</button>
+  </div>
+
+  <!-- JavaScript -->
   <script>
-    let spirals = parseInt(localStorage.getItem("spirals")) || 0;
-    let clicksLeft = parseInt(localStorage.getItem("clicksLeft")) || 500;
-    let cooldownUntil = parseInt(localStorage.getItem("cooldownUntil")) || 0;
-    let lastClickTime = 0;
-    const clickCooldown = 300;
-    const COOLDOWN_DURATION = 4 * 60 * 60 * 1000;
-    const isVIP = true; // Toggle this manually for testing
+    // Effects Module
+    const Effects = {
+      spawnSpark(x, y) {
+        const sparkCount = 20;
+        for (let i = 0; i < sparkCount; i++) {
+          const spark = document.createElement("div");
+          spark.className = "spark";
+          spark.style.left = `${x}px`;
+          spark.style.top = `${y}px`;
+          spark.style.backgroundColor = ["#facc15", "#e879f9", "#60a5fa", "#34d399"][Math.floor(Math.random() * 4)];
+          spark.style.setProperty("--dx", `${Math.cos(Math.random() * 2 * Math.PI) * (30 + Math.random() * 60)}px`);
+          spark.style.setProperty("--dy", `${Math.sin(Math.random() * 2 * Math.PI) * (30 + Math.random() * 60)}px`);
+          document.body.appendChild(spark);
+          setTimeout(() => spark.remove(), 900);
+        }
+      },
+    };
 
-    const clicker = document.getElementById("clicker");
-clicker.addEventListener("click", () => {
-  const now = Date.now();
-  if (now < cooldownUntil) {
-    const remaining = cooldownUntil - now;
-    const seconds = Math.floor(remaining / 1000);
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    alert(`⏳ You're in cooldown. Wait ${hours}h ${minutes}m ${secs}s.`);
-    return;
-  }
+    // UI Module
+    const UI = {
+      screens: {
+        shop: {
+          title: "🛍️ The Spiral Shop",
+          bg: "shop-bg.png",
+          render: () => {
+            const shopItems = [
+              {
+                id: "multiplier",
+                name: "Click Multiplier (x2)",
+                cost: 100,
+                effect: (state) => (state.clickMultiplier *= 2),
+              },
+              {
+                id: "clicks",
+                name: "Extra Clicks (+100)",
+                cost: 50,
+                effect: (state) => (state.clicksLeft += 100),
+              },
+            ];
 
-  if (clicksLeft <= 0) {
-    cooldownUntil = now + COOLDOWN_DURATION;
-    localStorage.setItem("cooldownUntil", cooldownUntil);
-    clicksLeft = 0;
-    alert("⚠️ Spiral limit reached. Cooldown started.");
-    return;
-  }
+            const content = document.createElement("div");
+            content.className = "space-y-4";
+            shopItems.forEach((item) => {
+              const button = document.createElement("button");
+              button.className = "px-4 py-2 bg-purple-600 rounded shadow w-full";
+              button.textContent = `${item.name} - ${item.cost} FEVCOIN`;
+              button.addEventListener("click", () => Game.buyShopItem(item));
+              content.appendChild(button);
+            });
+            return content;
+          },
+        },
+        achievements: {
+          title: "🏆 Spiral Achievements",
+          bg: "achievements-bg.png",
+          render: () => {
+            const content = document.createElement("div");
+            content.textContent = "✨ More cosmic glory coming soon...";
+            return content;
+          },
+        },
+        rank: {
+          title: "🧙 Cult Rank Pyramid",
+          bg: "cult-rank-bg.png",
+          render: () => {
+            const content = document.createElement("div");
+            content.textContent = "✨ More cosmic glory coming soon...";
+            return content;
+          },
+        },
+        lore: {
+          title: "📜 Lore Scroll Archive",
+          bg: "lore-bg.png",
+          render: () => {
+            const content = document.createElement("div");
+            content.textContent = "✨ More cosmic glory coming soon...";
+            return content;
+          },
+        },
+        info: {
+          title: "❓ Spiral Codex",
+          bg: "about-bg.png",
+          render: () => {
+            const content = document.createElement("div");
+            content.textContent = "✨ More cosmic glory coming soon...";
+            return content;
+          },
+        },
+      },
 
-  if (now - lastClickTime > clickCooldown) {
-    spirals++;
-    clicksLeft--;
-    lastClickTime = now;
-    const rect = clicker.getBoundingClientRect();
-    const sparkX = rect.left + rect.width / 2;
-    const sparkY = rect.top + rect.height / 2;
-    spawnSpark(sparkX, sparkY);
-    localStorage.setItem("spirals", spirals);
-    localStorage.setItem("clicksLeft", clicksLeft);
-    countDisplay.textContent = `Clicks: ${spirals}`;
-    fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
-    cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
-    document.getElementById("rank-label").textContent = getRank(spirals);
-  }
-});
-    const countDisplay = document.getElementById("click-count");
-    const fevcoDisplay = document.getElementById("fevco-count");
-    const cooldownStatus = document.getElementById("cooldown-status");
-    const sourceScreen = document.getElementById("source-screen");
-    const otherScreen = document.getElementById("other-screen");
-    const title = document.getElementById("screen-title");
-    const bg = document.getElementById("screen-bg");
-    const popup = document.getElementById("daily-popup");
-    const message = document.getElementById("daily-message");
+      navigate(page) {
+        const screen = this.screens[page];
+        if (!screen) return;
 
-    function spawnSpark(x, y) {
-  const sparkCount = 40;
-  for (let i = 0; i < sparkCount; i++) {
-    const spark = document.createElement('div');
-    spark.className = 'pointer-events-none fixed w-2.5 h-2.5 rounded-full z-50 blur-md brightness-150';
-    spark.style.backgroundColor = ['#facc15', '#e879f9', '#60a5fa', '#34d399'][Math.floor(Math.random() * 4)];
-    spark.style.left = `${x}px`;
-    spark.style.top = `${y}px`;
-    spark.style.opacity = '1';
-    spark.style.transition = 'transform 0.9s ease-out, opacity 0.9s ease-out';
+        document.getElementById("source-screen").classList.add("hidden");
+        const otherScreen = document.getElementById("other-screen");
+        otherScreen.classList.remove("hidden");
+        document.getElementById("screen-title").textContent = screen.title;
+        document.getElementById("screen-bg").src = screen.bg;
+        const content = document.getElementById("screen-content");
+        content.innerHTML = "";
+        content.appendChild(screen.render());
+      },
 
-    const angle = Math.random() * 2 * Math.PI;
-    const distance = 30 + Math.random() * 60;
-    const dx = Math.cos(angle) * distance;
-    const dy = Math.sin(angle) * distance;
+      goBack() {
+        document.getElementById("other-screen").classList.add("hidden");
+        document.getElementById("source-screen").classList.remove("hidden");
+      },
 
-    document.body.appendChild(spark);
-    requestAnimationFrame(() => {
-      spark.style.transform = `translate(${dx}px, ${dy}px) scale(1.4)`;
-      spark.style.opacity = '0';
-    });
+      showSourceScreen() {
+        this.goBack();
+      },
 
-    setTimeout(() => spark.remove(), 600);
-  }
-}
+      updateHUD(state) {
+        document.getElementById("click-count").textContent = `🔘 Clicks: ${state.spirals}`;
+        document.getElementById("fevco-count").textContent = `💰 FEVCOIN: ${(state.spirals / 500).toFixed(2)}`;
+        document.getElementById("rank-label").textContent = this.getRank(state.spirals);
+        this.updateCooldownDisplay(state);
+      },
 
+      updateCooldownDisplay(state) {
+        const now = Date.now();
+        if (now < state.cooldownUntil) {
+          const remaining = state.cooldownUntil - now;
+          const hours = Math.floor(remaining / 3600000);
+          const minutes = Math.floor((remaining % 3600000) / 60000);
+          const seconds = Math.floor((remaining % 60000) / 1000);
+          document.getElementById("cooldown-status").textContent = `⏳ Cooldown: ${hours}h ${minutes}m ${seconds}s`;
+        } else {
+          document.getElementById("cooldown-status").textContent = `⏳ Clicks Left: ${state.clicksLeft}`;
+        }
+      },
 
+      showDailyPopup(message) {
+        document.getElementById("daily-message").textContent = message;
+        document.getElementById("daily-popup").classList.remove("hidden");
+      },
 
-    function navigate(page) {
-      console.log("Navigate called for:", page);
-      const titles = {
-        shop: '🛍️ The Spiral Shop',
-        achievements: '🏆 Spiral Achievements',
-        rank: '🧙 Cult Rank Pyramid',
-        lore: '📜 Lore Scroll Archive',
-        info: '❓ Spiral Codex'
-      };
-      const bgs = {
-        shop: 'shop-bg.png',
-        achievements: 'achievements-bg.png',
-        rank: 'cult-rank-bg.png',
-        lore: 'lore-bg.png',
-        info: 'about-bg.png'
-      };
+      closeDailyPopup() {
+        document.getElementById("daily-popup").classList.add("hidden");
+      },
 
+      showCooldownPopup(cooldownUntil) {
+        const now = Date.now();
+        const remaining = cooldownUntil - now;
+        const hours = Math.floor(remaining / 3600000);
+        const minutes = Math.floor((remaining % 3600000) / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        document.getElementById("cooldown-message").textContent = `⏳ You're in cooldown. Wait ${hours}h ${minutes}m ${seconds}s.`;
+        document.getElementById("cooldown-popup").classList.remove("hidden");
+      },
 
-      sousourceScreen.style.display = 'none';
-      otherScreen.classList.remove('hidden');
-      title.textContent = titles[page];
-      bg.src = bgs[page];
-    }
+      closeCooldownPopup() {
+        document.getElementById("cooldown-popup").classList.add("hidden");
+      },
 
-    function goBack() {
-      otherScreen.classList.add('hidden');
-      sourceScreen.classList.remove('hidden');
-    }
+      getRank(spirals) {
+        if (spirals >= 500000) return "👑 Meme Warlord";
+        if (spirals >= 100000) return "🧙 Spiral Prophet";
+        if (spirals >= 50000) return "🔮 Meme Adept";
+        if (spirals >= 2000) return "🌱 Spiral Initiate";
+        return "🐣 Spiral Seedling";
+      },
+    };
 
-    function claimDailyReward() {
-      const lastClaim = parseInt(localStorage.getItem("lastDaily")) || 0;
-      const now = Date.now();
-      const ONE_DAY = 24 * 60 * 60 * 1000;
-      if (now - lastClaim < ONE_DAY) {
-        message.textContent = "🕒 You already claimed today's reward. Come back later.";
-      } else {
-        const base = 50;
-        const bonus = isVIP ? 25 : 0;
+    // Game Module
+    const Game = {
+      state: {
+        spirals: 0,
+        clicksLeft: 500,
+        cooldownUntil: 0,
+        lastDaily: 0,
+        clickMultiplier: 1,
+        isVIP: false,
+      },
+
+      constants: {
+        COOLDOWN_DURATION: 4 * 60 * 60 * 1000,
+        CLICK_COOLDOWN: 300,
+        DAILY_REWARD_BASE: 50,
+        DAILY_REWARD_VIP_BONUS: 25,
+        ONE_DAY: 24 * 60 * 60 * 1000,
+      },
+
+      init() {
+        this.loadState();
+        this.bindEvents();
+        this.startCooldownTimer();
+        UI.updateHUD(this.state);
+        this.hideLoadingScreen();
+      },
+
+      loadState() {
+        this.state.spirals = this.getStoredValue("spirals", 0);
+        this.state.clicksLeft = this.getStoredValue("clicksLeft", 500);
+        this.state.cooldownUntil = this.getStoredValue("cooldownUntil", 0);
+        this.state.lastDaily = this.getStoredValue("lastDaily", 0);
+        this.state.clickMultiplier = this.getStoredValue("clickMultiplier", 1);
+
+        const now = Date.now();
+        if (now >= this.state.cooldownUntil) {
+          this.state.clicksLeft = 500;
+          this.state.cooldownUntil = 0;
+          this.saveState();
+        }
+      },
+
+      saveState() {
+        localStorage.setItem("spirals", this.state.spirals);
+        localStorage.setItem("clicksLeft", this.state.clicksLeft);
+        localStorage.setItem("cooldownUntil", this.state.cooldownUntil);
+        localStorage.setItem("lastDaily", this.state.lastDaily);
+        localStorage.setItem("clickMultiplier", this.state.clickMultiplier);
+      },
+
+      getStoredValue(key, defaultValue) {
+        const value = localStorage.getItem(key);
+        return value && !isNaN(value) ? parseInt(value) : defaultValue;
+      },
+
+      handleClick() {
+        const now = Date.now();
+        if (now < this.state.cooldownUntil) {
+          UI.showCooldownPopup(this.state.cooldownUntil);
+          return;
+        }
+
+        if (this.state.clicksLeft <= 0) {
+          this.state.cooldownUntil = now + this.constants.COOLDOWN_DURATION;
+          this.state.clicksLeft = 0;
+          this.saveState();
+          UI.showCooldownPopup(this.state.cooldownUntil);
+          return;
+        }
+
+        const lastClickTime = this.state.lastClickTime || 0;
+        if (now - lastClickTime > this.constants.CLICK_COOLDOWN) {
+          const earnedSpirals = 1 * this.state.clickMultiplier;
+          this.state.spirals += earnedSpirals;
+          this.state.clicksLeft--;
+          this.state.lastClickTime = now;
+          this.saveState();
+          UI.updateHUD(this.state);
+          const clicker = document.getElementById("clicker");
+          const rect = clicker.getBoundingClientRect();
+          Effects.spawnSpark(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+      },
+
+      claimDailyReward() {
+        const now = Date.now();
+        if (now - this.state.lastDaily < this.constants.ONE_DAY) {
+          UI.showDailyPopup("🕒 You already claimed today's reward. Come back later.");
+          return;
+        }
+
+        const base = this.constants.DAILY_REWARD_BASE;
+        const bonus = this.state.isVIP ? this.constants.DAILY_REWARD_VIP_BONUS : 0;
         const total = base + bonus;
-        spirals += total;
-        localStorage.setItem("spirals", spirals);
-        localStorage.setItem("lastDaily", now);
-        countDisplay.textContent = `Clicks: ${spirals}`;
-        fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
-        message.textContent = `🎁 Daily Reward: +${base} Spiral${isVIP ? " + " + bonus + " VIP Bonus" : ""}!`;
-        document.getElementById("rank-label").textContent = getRank(spirals);
+        this.state.spirals += total;
+        this.state.lastDaily = now;
+        this.saveState();
+        UI.showDailyPopup(`🎁 Daily Reward: +${base} Spiral${this.state.isVIP ? ` + ${bonus} VIP Bonus` : ""}!`);
+        UI.updateHUD(this.state);
+      },
 
-      }
-      popup.classList.remove("hidden");
-    }
+      buyShopItem(item) {
+        const fevcoin = this.state.spirals / 500;
+        if (fevcoin >= item.cost) {
+          this.state.spirals -= item.cost * 500;
+          item.effect(this.state);
+          this.saveState();
+          UI.showDailyPopup(`✅ Purchased ${item.name}!`);
+          UI.updateHUD(this.state);
+        } else {
+          UI.showDailyPopup(`❌ Not enough FEVCOIN for ${item.name}.`);
+        }
+      },
 
-    function closeDailyPopup() {
-      popup.classList.add("hidden");
-    }
+      resetGame() {
+        localStorage.clear();
+        this.state.spirals = 0;
+        this.state.clicksLeft = 500;
+        this.state.cooldownUntil = 0;
+        this.state.lastDaily = 0;
+        this.state.clickMultiplier = 1;
+        this.saveState();
+        UI.updateHUD(this.state);
+        UI.showSourceScreen();
+      },
 
-    window.onload = () => {
-      const now = Date.now();
-      if (now >= cooldownUntil) {
-        clicksLeft = 500;
-        cooldownUntil = 0;
-        localStorage.setItem("clicksLeft", clicksLeft);
-        localStorage.setItem("cooldownUntil", cooldownUntil);
-      }
-      countDisplay.textContent = `Clicks: ${spirals}`;
-      fevcoDisplay.textContent = `FEVCOIN: ${(spirals / 500).toFixed(2)}`;
-      cooldownStatus.textContent = `Clicks Left: ${clicksLeft}`;
-      document.getElementById("rank-label").textContent = getRank(spirals);
-      setTimeout(() => {
+      startCooldownTimer() {
+        setInterval(() => {
+          UI.updateCooldownDisplay(this.state);
+        }, 1000);
+      },
+
+      hideLoadingScreen() {
+        setTimeout(() => {
           const loader = document.getElementById("loading-screen");
           loader.classList.add("opacity-0");
-          setTimeout(() => loader.style.display = "none", 700);
+          setTimeout(() => (loader.style.display = "none"), 700);
         }, 1000);
 
-        // Failsafe: Force hide loading screen after 5s if not already removed
-      setTimeout(() => {
+        setTimeout(() => {
           const loader = document.getElementById("loading-screen");
           if (loader && loader.style.display !== "none") {
             loader.classList.add("opacity-0");
-            setTimeout(() => loader.style.display = "none", 700);
+            setTimeout(() => (loader.style.display = "none"), 700);
           }
         }, 5000);
+      },
 
+      bindEvents() {
+        document.getElementById("clicker").addEventListener("click", () => this.handleClick());
+        document.getElementById("clicker").addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") this.handleClick();
+        });
+        document.getElementById("daily-button").addEventListener("click", () => this.claimDailyReward());
+        document.getElementById("reset-button").addEventListener("click", () => this.resetGame());
+        document.getElementById("shop-button").addEventListener("click", () => UI.navigate("shop"));
+        document.getElementById("achievements-button").addEventListener("click", () => UI.navigate("achievements"));
+        document.getElementById("rank-button").addEventListener("click", () => UI.navigate("rank"));
+        document.getElementById("lore-button").addEventListener("click", () => UI.navigate("lore"));
+        document.getElementById("info-button").addEventListener("click", () => UI.navigate("info"));
+        document.getElementById("source-button").addEventListener("click", () => UI.goBack());
+        document.getElementById("back-button").addEventListener("click", () => UI.goBack());
+        document.getElementById("close-daily-popup").addEventListener("click", () => UI.closeDailyPopup());
+        document.getElementById("close-cooldown-popup").addEventListener("click", () => UI.closeCooldownPopup());
+      },
+    };
 
-
-    }
-    function getRank(spirals) {
-      if (spirals >= 500000) return "👑 Meme Warlord";
-      if (spirals >= 100000) return "🧙 Spiral Prophet";
-      if (spirals >= 50000) return "🔮 Meme Adept";
-      if (spirals >= 2000) return "🌱 Spiral Initiate";
-      return "🐣 Spiral Seedling";
-}
-    function resetGame() {
-      localStorage.clear();
-      location.reload();
-    }
-
+    // Initialize Telegram WebApp and Game
+    window.Telegram.WebApp.ready();
+    Game.state.isVIP = !!window.Telegram.WebApp.initDataUnsafe?.user?.is_premium;
+    Game.init();
   </script>
 </body>
 </html>
