@@ -17,20 +17,16 @@
     <div id="click-count" class="mt-4 text-lg">Clicks: 0</div>
     <div id="fevco-count" class="text-sm text-purple-300 mt-1">FEVCOIN: 0.00</div>
     <div id="cooldown-status" class="mt-2 text-red-400"></div>
-
-    <!-- SOURCE BUTTON -->
-    <div class="absolute top-4 right-4">
-      <img src="source.png" class="w-14 h-14 cursor-pointer" onclick="navigate('source')" title="Return to Source" />
-    </div>
   </div>
 
-  <!-- FIXED NAV BUTTONS (2 rows) -->
+  <!-- FIXED NAV BUTTONS (2 rows with 4 each) -->
   <div class="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2">
     <!-- Top Row -->
     <div class="flex justify-center gap-4 mb-1">
       <img src="lore.png" class="w-20 h-20 cursor-pointer" onclick="navigate('lore')" />
       <img src="daily.png" class="w-20 h-20 cursor-pointer" onclick="claimDailyReward()" />
       <img src="info.png" class="w-20 h-20 cursor-pointer" onclick="navigate('info')" />
+      <img src="source.png" class="w-20 h-20 cursor-pointer" onclick="navigate('source')" title="Return to Source" />
     </div>
     <!-- Bottom Row -->
     <div class="flex justify-center gap-4">
