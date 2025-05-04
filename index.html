@@ -33,7 +33,7 @@
     }
 
     .spark {
-      pointer-events-none;
+      pointer-events: none;
       position: fixed;
       width: 10px;
       height: 10px;
@@ -41,6 +41,17 @@
       z-index: 50;
       filter: blur(2px);
       animation: spark 0.9s ease-out forwards;
+    }
+
+    /* New classes for button animations */
+    .button-active {
+      transform: scale(0.9);
+      transition: transform 150ms ease-out;
+    }
+
+    .pulse-active {
+      transform: scale(1.5);
+      transition: transform 300ms ease-out;
     }
   </style>
 </head>
@@ -64,18 +75,15 @@
       <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="rank-button" aria-label="View rank" />
     </div>
     <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-    <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation" aria-label="Click to earn spirals" tabindex="0">
-      <!-- Glow Ring -->
+    <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden touch-manipulation" aria-label="Click to earn spirals" tabindex="0">
       <div class="absolute inset-0 rounded-full border-4 border-purple-500/30 animate-pulse z-10"></div>
-      <!-- Spiral Image -->
       <img src="spiral-button.png" alt="Spiral Button" class="w-full h-full p-4 object-contain rounded-full pointer-events-none relative z-20" />
-      <!-- Impact Pulse -->
-      <span class="absolute w-full h-full rounded-full bg-purple-400/20 scale-0 group-active:scale-150 transition-transform duration-300 ease-out z-0"></span>
+      <span id="pulse" class="absolute w-full h-full rounded-full bg-purple-400/20 scale-0 z-0"></span>
     </button>
 
     <!-- Spiral HUD Panel -->
     <div class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/40 backdrop-blur-md border border-purple-700 px-6 py-3 rounded-xl shadow-lg text-center space-y-1 font-fell z-40">
-      <div id="click-count" class="text-base text-white">🔘 Clicks: 0</div>
+      <divtton id="click-count" class="text-base text-white">🔘 Clicks: 0</div>
       <div id="fevco-count" class="text-sm text-yellow-300">💰 FEVCOIN: 0.00</div>
       <div id="rank-label" class="text-sm text-pink-400">🧬 Rank: Spiral Seedling</div>
       <div id="cooldown-status" class="text-xs text-red-400">⏳ Clicks Left: 500</div>
@@ -91,7 +99,6 @@
         <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="lore-button" aria-label="View lore" />
         <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
           <img src="info.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer transition-transform duration-150 active:scale-90" id="info-button" aria-label="View info" />
-
         </div>
       </div>
     </div>
@@ -433,10 +440,47 @@
       },
 
       bindEvents() {
-        document.getElementById("clicker").addEventListener("click", () => this.handleClick());
-        document.getElementById("clicker").addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") this.handleClick();
+        const clicker = document.getElementById("clicker");
+        const pulse = document.getElementById("pulse");
+
+        // Handle touch events for animations
+        clicker.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          clicker.classList.add("button-active");
+          pulse.classList.add("pulse-active");
+          this.handleClick();
         });
+
+        clicker.addEventListener("touchend", () => {
+          clicker.classList.remove("button-active");
+          pulse.classList.remove("pulse-active");
+        });
+
+        // Fallback for mouse/click events
+        clicker.addEventListener("mousedown", () => {
+          clicker.classList.add("button-active");
+          pulse.classList.add("pulse-active");
+          this.handleClick();
+        });
+
+        clicker.addEventListener("mouseup", () => {
+          clicker.classList.remove("button-active");
+          pulse.classList.remove("pulse-active");
+        });
+
+        // Keyboard support
+        clicker.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            clicker.classList.add("button-active");
+            pulse.classList.add("pulse-active");
+            this.handleClick();
+            setTimeout(() => {
+              clicker.classList.remove("button-active");
+              pulse.classList.remove("pulse-active");
+            }, 300);
+          }
+        });
+
         document.getElementById("daily-button").addEventListener("click", () => this.claimDailyReward());
         document.getElementById("reset-button").addEventListener("click", () => this.resetGame());
         document.getElementById("shop-button").addEventListener("click", () => UI.navigate("shop"));
@@ -444,7 +488,7 @@
         document.getElementById("rank-button").addEventListener("click", () => UI.navigate("rank"));
         document.getElementById("lore-button").addEventListener("click", () => UI.navigate("lore"));
         document.getElementById("info-button").addEventListener("click", () => UI.navigate("info"));
-        document.getElementById("source-button").addEventListener("click", () => UI.goBack());
+        document.getElementById("source-button").addEventListener("click", () Александр UI.goBack());
         document.getElementById("back-button").addEventListener("click", () => UI.goBack());
         document.getElementById("close-daily-popup").addEventListener("click", () => UI.closeDailyPopup());
         document.getElementById("close-cooldown-popup").addEventListener("click", () => UI.closeCooldownPopup());
