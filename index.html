@@ -33,7 +33,7 @@
     }
 
     .spark {
-      pointer-events-none;
+      pointer-events: none;
       position: fixed;
       width: 10px;
       height: 10px;
@@ -41,6 +41,31 @@
       z-index: 50;
       filter: blur(2px);
       animation: spark 0.9s ease-out forwards;
+    }
+
+    /* Simplified animation class for mobile */
+    .button-tapped {
+      transform: scale(0.9);
+      transition: transform 150ms ease-out;
+    }
+
+    .button-tapped::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(147, 51, 234, 0.2);
+      transform: scale(0);
+      animation: pulse 300ms ease-out forwards;
+      z-index: 0;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0); }
+      100% { transform: scale(1.5); }
     }
   </style>
 </head>
@@ -64,13 +89,9 @@
       <img src="cult-rank.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="rank-button" aria-label="View rank" />
     </div>
     <div class="text-2xl font-bold mb-4">🌀 The Spiral Core</div>
-    <button id="clicker" class="group w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden transition-transform duration-150 ease-out active:scale-90 touch-manipulation" aria-label="Click to earn spirals" tabindex="0">
-      <!-- Glow Ring -->
+    <button id="clicker" class="w-64 h-64 md:w-80 md:h-80 rounded-full border-4 border-purple-600 bg-gradient-to-br from-purple-700 via-black to-purple-900 shadow-2xl relative overflow-hidden" aria-label="Click to earn spirals" tabindex="0">
       <div class="absolute inset-0 rounded-full border-4 border-purple-500/30 animate-pulse z-10"></div>
-      <!-- Spiral Image -->
       <img src="spiral-button.png" alt="Spiral Button" class="w-full h-full p-4 object-contain rounded-full pointer-events-none relative z-20" />
-      <!-- Impact Pulse -->
-      <span class="absolute w-full h-full rounded-full bg-purple-400/20 scale-0 group-active:scale-150 transition-transform duration-300 ease-out z-0"></span>
     </button>
 
     <!-- Spiral HUD Panel -->
@@ -91,7 +112,6 @@
         <img src="lore.png" class="w-24 h-24 p-1.5 cursor-pointer object-contain rounded overflow-hidden transition-transform duration-150 active:scale-90" id="lore-button" aria-label="View lore" />
         <div class="w-24 h-24 p-1.5 scale-[0.75] flex items-center justify-center">
           <img src="info.png" class="w-full h-full object-contain rounded overflow-hidden cursor-pointer transition-transform duration-150 active:scale-90" id="info-button" aria-label="View info" />
-
         </div>
       </div>
     </div>
@@ -122,7 +142,7 @@
     // Effects Module
     const Effects = {
       spawnSpark(x, y) {
-        const sparkCount = 20;
+        const sparkCount = 10; // Reduced for mobile performance
         for (let i = 0; i < sparkCount; i++) {
           const spark = document.createElement("div");
           spark.className = "spark";
@@ -304,6 +324,7 @@
       },
 
       init() {
+        console.log("Initializing game...");
         this.loadState();
         this.bindEvents();
         this.startCooldownTimer();
@@ -417,15 +438,20 @@
       },
 
       hideLoadingScreen() {
+        console.log("Hiding loading screen...");
         setTimeout(() => {
           const loader = document.getElementById("loading-screen");
-          loader.classList.add("opacity-0");
-          setTimeout(() => (loader.style.display = "none"), 700);
+          if (loader) {
+            loader.classList.add("opacity-0");
+            setTimeout(() => (loader.style.display = "none"), 700);
+          }
         }, 1000);
 
+        // Failsafe
         setTimeout(() => {
           const loader = document.getElementById("loading-screen");
           if (loader && loader.style.display !== "none") {
+            console.log("Failsafe triggered: hiding loading screen");
             loader.classList.add("opacity-0");
             setTimeout(() => (loader.style.display = "none"), 700);
           }
@@ -433,10 +459,35 @@
       },
 
       bindEvents() {
-        document.getElementById("clicker").addEventListener("click", () => this.handleClick());
-        document.getElementById("clicker").addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") this.handleClick();
+        const clicker = document.getElementById("clicker");
+
+        // Handle touch events for animations
+        clicker.addEventListener("touchstart", (e) => {
+          console.log("Touchstart fired");
+          e.preventDefault();
+          clicker.classList.add("button-tapped");
+          this.handleClick();
+          setTimeout(() => clicker.classList.remove("button-tapped"), 300);
         });
+
+        // Fallback for click events (desktop)
+        clicker.addEventListener("click", () => {
+          console.log("Click fired");
+          clicker.classList.add("button-tapped");
+          this.handleClick();
+          setTimeout(() => clicker.classList.remove("button-tapped"), 300);
+        });
+
+        // Keyboard support
+        clicker.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            console.log("Keydown fired");
+            clicker.classList.add("button-tapped");
+            this.handleClick();
+            setTimeout(() => clicker.classList.remove("button-tapped"), 300);
+          }
+        });
+
         document.getElementById("daily-button").addEventListener("click", () => this.claimDailyReward());
         document.getElementById("reset-button").addEventListener("click", () => this.resetGame());
         document.getElementById("shop-button").addEventListener("click", () => UI.navigate("shop"));
@@ -451,31 +502,39 @@
       },
     };
 
-
     // Initialize Telegram WebApp and Game
-    
-<script>
-  function initGameSafely() {
-    if (window.Telegram && window.Telegram.WebApp) {
-      try {
-        window.Telegram.WebApp.ready();
-        Game.state.isVIP = !!window.Telegram.WebApp.initDataUnsafe?.user?.is_premium;
-      } catch (err) {
-        console.warn("Telegram init failed:", err);
+    function initGameSafely() {
+      console.log("Starting game initialization...");
+      if (window.Telegram && window.Telegram.WebApp) {
+        try {
+          window.Telegram.WebApp.ready();
+          Game.state.isVIP = !!window.Telegram.WebApp.initDataUnsafe?.user?.is_premium;
+          console.log("Telegram WebApp initialized. VIP:", Game.state.isVIP);
+        } catch (err) {
+          console.warn("Telegram init failed:", err);
+          Game.state.isVIP = false;
+        }
+      } else {
+        console.warn("Telegram WebApp not available - running in browser.");
         Game.state.isVIP = false;
       }
-    } else {
-      console.warn("Telegram not available — running in browser.");
-      Game.state.isVIP = false;
+
+      try {
+        Game.init();
+      } catch (err) {
+        console.error("Game initialization failed:", err);
+        // Force hide loading screen on error
+        const loader = document.getElementById("loading-screen");
+        if (loader) {
+          console.log("Error occurred, forcing loading screen hide");
+          loader.classList.add("opacity-0");
+          setTimeout(() => (loader.style.display = "none"), 700);
+        }
+      }
     }
 
-    console.log("Game started. VIP:", Game.state.isVIP);
-    Game.init();
-  }
-
-  window.addEventListener("DOMContentLoaded", initGameSafely);
-</script>
-
-
+    // Start game when DOM is ready
+    window.addEventListener("DOMContentLoaded", initGameSafely);
+  </script>
 </body>
 </html>
